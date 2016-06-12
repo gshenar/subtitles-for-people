@@ -44,8 +44,7 @@ public class Subtitle : MonoBehaviour {
 
     public void UpdateWithCurrentText()
     {
-        if (subtitleText.Count > 0)
-        {
+
             if (counter % 200 == 0)
             {
                 GetTextFromServerOneLineAtATime();
@@ -67,24 +66,35 @@ public class Subtitle : MonoBehaviour {
                         i--;
                     }
                 }   
-                                      
-                textMesh.text = veryCurrentText.Substring(0, splitIndex) + "\n" + veryCurrentText.Substring(splitIndex);
+                if(veryCurrentText.Length < 20)
+                {
+                    textMesh.text = veryCurrentText;
+                }
+                else
+                {
+                    textMesh.text = veryCurrentText.Substring(0, splitIndex) + "\n" + veryCurrentText.Substring(splitIndex);
+                }
+
                 textCounter++;
             }
             counter++;
-        }
+        
     }
 
     public void GetTextFromServerOneLineAtATime()
     {
-        WWW www = new WWW("http://10.1.10.56:8080/");
+        WWW www = new WWW("http://10.1.10.56:8080/?" + counter);
         while (!www.isDone)  //wait until www isdone
             ;
 
         if (www.error != null)
             return;
         print("made request " + www.text);
-        currentText = www.text;
+
+        string text = www.text;
+        if (string.IsNullOrEmpty(text)) { text = "waiting..."; }
+
+        currentText = text;
     }
 
 
